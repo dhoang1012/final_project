@@ -2,7 +2,6 @@
 session_start();
 require_once "db.php"; 
 
-
 if (!isset($_SESSION["user_id"])) {
     header("Location: login.php");
     exit;
@@ -10,11 +9,18 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
+// This will print at the VERY TOP of your page for only YOU to see
+echo "<div style='background:yellow; color:black; padding:10px; border:2px solid red;'>";
+echo "DEBUG INFO:<br>";
+echo "Your Session User ID: " . $user_id . "<br>";
 
 $stmt = $conn->prepare("SELECT * FROM cart_items WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+echo "Rows found in database for this ID: " . $result->num_rows;
+echo "</div>";
 
 $total_price = 0;
 ?>
