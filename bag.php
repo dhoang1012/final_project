@@ -11,7 +11,7 @@ if (!isset($_SESSION["user_id"])) {
 $user_id = $_SESSION["user_id"];
 
 
-$stmt = $conn->prepare("SELECT * FROM cart_items WHERE user_id = ?");
+$stmt = $conn->prepare("SELECT * FROM cart_items");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
