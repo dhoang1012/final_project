@@ -9,18 +9,10 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// This will print at the VERY TOP of your page for only YOU to see
-echo "<div style='background:yellow; color:black; padding:10px; border:2px solid red;'>";
-echo "DEBUG INFO:<br>";
-echo "Your Session User ID: " . $user_id . "<br>";
-
-$stmt = $conn->prepare("SELECT * FROM cart_items WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-echo "Rows found in database for this ID: " . $result->num_rows;
-echo "</div>";
+$stmt_bag = $conn->prepare("SELECT * FROM cart_items WHERE user_id = ?");
+$stmt_bag->bind_param("i", $user_id);
+$stmt_bag->execute();
+$result_bag = $stmt_bag->get_result();
 
 $total_price = 0;
 ?>
@@ -28,43 +20,57 @@ $total_price = 0;
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Your Bag | Scent Atelier</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cloudflare.com">
 </head>
 <body>
+    
     <?php include 'nav.php'; ?>
 
     <div class="bag-container">
         <h1>Your Shopping Bag</h1>
 
-        <?php if ($result->num_rows > 0): ?>
+        <?php if ($result_bag->num_rows > 0): ?>
             <div class="cart-items">
-                <?php while($item = $result->fetch_assoc()): ?>
-                <div class="cart-item" style="border: 1px solid black; margin: 10px; padding: 10px; display: block !important;">
-                    <!-- If these show up, your data is officially reaching the page -->
-                    <p>Debug Name: <?php echo $item['product_name']; ?></p>
-                    <p>Debug Price: <?php echo $item['product_price']; ?></p>
-                    
-                    <img src="<?php echo $item['product_image']; ?>" style="width:100px;">
-                    
-                    <?php 
-                        $total_price += ($item['product_price'] * $item['quantity']); 
-                    ?>
-                </div>
-            <?php endwhile; ?>
+                <?php while($item = $result_bag->fetch_assoc()): ?>
+                    <div class="cart-item">
+                        <img src="<?php echo htmlspecialchars($item['product_image']); ?>" alt="Product">
+                        
+                        <div class="item-details">
+                            <h3><?php echo htmlspecialchars($item['product_name']); ?></h3>
+                            <p>Size: <?php echo htmlspecialchars($item['product_size']); ?></p>
+                            <p>Price: $<?php echo number_format((float)$item['product_price'], 2); ?></p>
+                            <p>Quantity: <?php echo (int)$item['quantity']; ?></p>
+                        </div>
+
+                        <?php 
+                            // Calculate subtotal for this specific item
+                            $item_total = (float)$item['product_price'] * (int)$item['quantity'];
+                            $total_price += $item_total; 
+                        ?>
+                    </div>
+                <?php endwhile; ?>
             </div>
 
             <div class="cart-summary">
                 <h2>Total: $<?php echo number_format($total_price, 2); ?></h2>
-                <button class="checkout-btn">Checkout</button>
+                <a href="checkout.php" class="checkout-btn" style="text-decoration: none; display: inline-block; text-align: center;">
+                    Checkout
+                </a>
             </div>
 
         <?php else: ?>
-            <p>Your bag is empty! <a href="index.php">Go shopping.</a></p>
+            <div class="empty-bag">
+                <p>Your bag is empty!</p>
+                <a href="index.php" class="shop-link">Go shopping.</a>
+            </div>
         <?php endif; ?>
     </div>
 
     <?php include 'footer.php'; ?>
+
 </body>
 </html>
