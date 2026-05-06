@@ -78,7 +78,7 @@ $orders = $stmt->get_result();
                 <?php endwhile; ?>
 
             </div>
-            ?php $stmt_items->close();
+            <?php $stmt_items->close(); ?>
 
         </div>
 
