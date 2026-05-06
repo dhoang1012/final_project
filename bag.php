@@ -41,20 +41,18 @@ $total_price = 0;
         <?php if ($result->num_rows > 0): ?>
             <div class="cart-items">
                 <?php while($item = $result->fetch_assoc()): ?>
-                    <div class="cart-item">
-                        <img src="<?php echo $item['product_image']; ?>" alt="Product">
-                        <div class="item-details">
-                            <h3><?php echo $item['product_name']; ?></h3>
-                            <p>Size: <?php echo $item['product_size']; ?></p>
-                            <p>Price: $<?php echo number_format($item['product_price'], 2); ?></p>
-                            <p>Quantity: <?php echo $item['quantity']; ?></p>
-                        </div>
-                        <?php 
-                            // Calculate total for this item
-                            $total_price += ($item['product_price'] * $item['quantity']); 
-                        ?>
-                    </div>
-                <?php endwhile; ?>
+                <div class="cart-item" style="border: 1px solid black; margin: 10px; padding: 10px; display: block !important;">
+                    <!-- If these show up, your data is officially reaching the page -->
+                    <p>Debug Name: <?php echo $item['product_name']; ?></p>
+                    <p>Debug Price: <?php echo $item['product_price']; ?></p>
+                    
+                    <img src="<?php echo $item['product_image']; ?>" style="width:100px;">
+                    
+                    <?php 
+                        $total_price += ($item['product_price'] * $item['quantity']); 
+                    ?>
+                </div>
+            <?php endwhile; ?>
             </div>
 
             <div class="cart-summary">
