@@ -9,7 +9,6 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// get orders
 $stmt = $conn->prepare("
     SELECT * 
     FROM orders 
@@ -25,8 +24,10 @@ $orders = $stmt->get_result();
 <html>
 <head>
     <title>My Orders</title>
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
 </head>
 <body>
 
@@ -34,50 +35,58 @@ $orders = $stmt->get_result();
 
 <div class="orders-container">
 
-    <h1>My Orders</h1>
+    <h1 class="orders-title">My Orders</h1>
 
     <?php if ($orders->num_rows === 0): ?>
-        <p>No orders yet.</p>
+        <p class="empty-state">No orders yet.</p>
     <?php endif; ?>
 
     <?php while ($order = $orders->fetch_assoc()): ?>
 
         <div class="order-box">
 
-            <h3>Order #<?php echo $order["id"]; ?></h3>
-            <p>Total: $<?php echo number_format($order["total"], 2); ?></p>
-            <p>Shipping: <?php echo htmlspecialchars($order["address"]); ?></p>
+            <div class="order-header">
+                <div class="order-id">Order #<?php echo $order["id"]; ?></div>
+                <div class="order-total">$<?php echo number_format($order["total"], 2); ?></div>
+            </div>
+
+            <div class="order-address">
+                <?php echo htmlspecialchars($order["address"]); ?>
+            </div>
 
             <?php
-            $stmt = $conn->prepare("
-                SELECT * FROM order_items WHERE order_id = ?
-            ");
-            $stmt->bind_param("i", $order["id"]);
-            $stmt->execute();
-            $items = $stmt->get_result();
-            ?>
+	        $stmt_items = $conn->prepare("SELECT * FROM order_items WHERE order_id = ?");
+	        $stmt_items->bind_param("i", $order["id"]);
+	        $stmt_items->execute();
+	        $items = $stmt_items->get_result();
+	        ?>
 
             <div class="order-items">
 
                 <?php while ($item = $items->fetch_assoc()): ?>
                     <div class="order-item">
-                        <img src="<?php echo $item["product_image"]; ?>" width="60">
+
+                        <img src="<?php echo $item["product_image"]; ?>">
 
                         <div>
-                            <p><?php echo $item["product_name"]; ?></p>
+                            <p><strong><?php echo $item["product_name"]; ?></strong></p>
                             <p>Qty: <?php echo $item["quantity"]; ?></p>
                             <p>$<?php echo number_format($item["product_price"], 2); ?></p>
                         </div>
+
                     </div>
                 <?php endwhile; ?>
 
             </div>
+            ?php $stmt_items->close();
 
         </div>
 
     <?php endwhile; ?>
 
 </div>
+
+<?php include 'footer.php'; ?>
 
 </body>
 </html>

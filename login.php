@@ -1,7 +1,6 @@
 <?php
 session_start();
-
-$conn = new mysqli("localhost", "root", "", "php_ecom");
+require_once 'db.php';
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);

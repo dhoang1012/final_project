@@ -8,15 +8,11 @@ if (!isset($_SESSION["user_id"])) {
 }
 
 $user_id = $_SESSION["user_id"];
-$id = $_POST["id"];
+$id = (int)$_POST["id"]; // Cast to int for safety
 $action = $_POST["action"];
 
-// get current quantity
-$stmt = $conn->prepare("
-    SELECT quantity 
-    FROM cart_items 
-    WHERE id = ? AND user_id = ?
-");
+
+$stmt = $conn->prepare("SELECT quantity FROM cart_items WHERE id = ? AND user_id = ?");
 $stmt->bind_param("ii", $id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -27,35 +23,29 @@ if (!$item) {
     exit;
 }
 
-$qty = $item["quantity"];
+$qty = (int)$item["quantity"]; // Ensure this is an integer
 
-// update logic
+
 if ($action === "increase") {
     $qty++;
 } elseif ($action === "decrease") {
     $qty--;
 }
 
-// REMOVE IF 0 OR LESS
 if ($qty <= 0) {
-
-    $delete = $conn->prepare("
-        DELETE FROM cart_items 
-        WHERE id = ? AND user_id = ?
-    ");
+    $delete = $conn->prepare("DELETE FROM cart_items WHERE id = ? AND user_id = ?");
     $delete->bind_param("ii", $id, $user_id);
     $delete->execute();
-
+    $delete->close(); // Close statement
 } else {
-
-    $update = $conn->prepare("
-        UPDATE cart_items 
-        SET quantity = ? 
-        WHERE id = ? AND user_id = ?
-    ");
+    // 4. UPDATE QUANTITY
+    $update = $conn->prepare("UPDATE cart_items SET quantity = ? WHERE id = ? AND user_id = ?");
     $update->bind_param("iii", $qty, $id, $user_id);
     $update->execute();
+    $update->close(); 
 }
+
+$stmt->close(); 
 
 header("Location: bag.php");
 exit;

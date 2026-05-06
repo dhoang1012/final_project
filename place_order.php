@@ -46,26 +46,27 @@ $order_id = $stmt->insert_id;
 
 // 4. Insert order items
 foreach ($cart as $item) {
-
     $stmt = $conn->prepare("
         INSERT INTO order_items 
         (order_id, product_id, product_name, product_price, product_size, product_image, quantity)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
+    // Changed types to 'isssssi' to ensure smooth handling of price and size
     $stmt->bind_param(
-        "issdssi",
-        $order_id,
-        $item["product_id"],
-        $item["product_name"],
-        $item["product_price"],
-        $item["product_size"],
-        $item["product_image"],
-        $item["quantity"]
+        "isssssi",
+        $order_id,             // i
+        $item["product_id"],   // s
+        $item["product_name"], // s
+        $item["product_price"],// s
+        $item["product_size"], // s
+        $item["product_image"],// s
+        $item["quantity"]      // i
     );
 
     $stmt->execute();
 }
+
 
 // 5. Clear cart
 $stmt = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
