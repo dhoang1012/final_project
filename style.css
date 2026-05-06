@@ -725,7 +725,6 @@ body
 .product-left img {
     width: 100%;
     max-height: 650px;
-    /* contain ensures the whole image fits in the box */
     object-fit: contain; 
     border-radius: 20px;
 }
@@ -788,7 +787,7 @@ body
 
 
 
-/* ================= AUTH PAGE ================= */
+/*  AUTH PAGE  */
 
 .auth-wrapper
 {
@@ -875,7 +874,6 @@ body
     font-size: 14px;
 }
 
-/* IMPORTANT: prevents shifting when logout appears */
 .nav-auth {
     font-size: 14px;
     color: black;
@@ -994,10 +992,29 @@ body
     align-items: center;
 }
 
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cart-item img {
+    width: 120px;         
+    height: 120px;
+    object-fit: cover;   
+    border-radius: 8px; 
+}
+
+.item-details h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+}
 
 
 
-/* ================= BAG PAGE (REFINED) ================= */
+/*  BAG PAGE (REFINED)  */
 
 .bag-container {
     max-width: 900px;
@@ -1045,7 +1062,7 @@ body
     color: dimgray;
 }
 
-/* ================= QUANTITY CONTROLS ================= */
+/*  QUANTITY CONTROLS  */
 
 .qty-controls {
     display: flex;
@@ -1087,7 +1104,7 @@ body
     color: white;
 }
 
-/* ================= REMOVE LINK ================= */
+/*  REMOVE LINK  */
 
 .remove-link {
     display: inline-block;
@@ -1100,7 +1117,7 @@ body
     text-decoration: underline;
 }
 
-/* ================= SUMMARY ================= */
+/*  SUMMARY  */
 
 .bag-summary {
     margin-top: 40px;
@@ -1362,8 +1379,8 @@ body
 .checkout-btn, .home-btn {
     display: inline-block;
     padding: 12px 30px;
-    background-color: floralwhite; /* Change this to your preferred color */
-    color: black !important; /* Forces text to be white */
+    background-color: floralwhite;
+    color: black !important; 
     border-radius: 8px;
     text-align: center;
     font-size: 16px;
@@ -1380,8 +1397,8 @@ body
 
 
 .bag-container {
-    min-height: 60vh; /* This forces the area to stay tall */
-    padding: 60px 50px; /* Keeps the spacing consistent with your other sections */
+    min-height: 60vh; 
+    padding: 60px 50px; 
 }
 
 
