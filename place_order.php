@@ -9,18 +9,17 @@ if (!isset($_SESSION["user_id"])) {
 
 $user_id = $_SESSION["user_id"];
 
-// 1. Get cart items
 $stmt = $conn->prepare("SELECT * FROM cart_items WHERE user_id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $cart = [];
-$total = 0;
+$subtotal = 0;
 
 while ($row = $result->fetch_assoc()) {
     $cart[] = $row;
-    $total += $row["product_price"] * $row["quantity"];
+    $subtotal += (float)$row["product_price"] * (int)$row["quantity"];
 }
 
 if (empty($cart)) {
@@ -28,51 +27,50 @@ if (empty($cart)) {
     exit;
 }
 
-// 2. Get form data
+$shipping = 9.99;
+$total = $subtotal + $shipping;
+
 $name = $_POST["full_name"];
 $email = $_POST["email"];
 $phone = $_POST["phone"];
 $address = $_POST["address"];
 
-// 3. Create order
-$stmt = $conn->prepare("
+
+$stmt_order = $conn->prepare("
     INSERT INTO orders (user_id, full_name, email, phone, address, total)
     VALUES (?, ?, ?, ?, ?, ?)
 ");
-$stmt->bind_param("issssd", $user_id, $name, $email, $phone, $address, $total);
-$stmt->execute();
 
-$order_id = $stmt->insert_id;
+$stmt_order->bind_param("issssd", $user_id, $name, $email, $phone, $address, $total);
+$stmt_order->execute();
 
-// 4. Insert order items
+$order_id = $stmt_order->insert_id;
+
 foreach ($cart as $item) {
-    $stmt = $conn->prepare("
+    $stmt_items = $conn->prepare("
         INSERT INTO order_items 
         (order_id, product_id, product_name, product_price, product_size, product_image, quantity)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     ");
 
-    // Changed types to 'isssssi' to ensure smooth handling of price and size
-    $stmt->bind_param(
+    $stmt_items->bind_param(
         "isssssi",
-        $order_id,             // i
-        $item["product_id"],   // s
-        $item["product_name"], // s
-        $item["product_price"],// s
-        $item["product_size"], // s
-        $item["product_image"],// s
-        $item["quantity"]      // i
+        $order_id,
+        $item["product_id"],
+        $item["product_name"],
+        $item["product_price"],
+        $item["product_size"],
+        $item["product_image"],
+        $item["quantity"]
     );
 
-    $stmt->execute();
+    $stmt_items->execute();
+    $stmt_items->close();
 }
 
+$stmt_clear = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
+$stmt_clear->bind_param("i", $user_id);
+$stmt_clear->execute();
 
-// 5. Clear cart
-$stmt = $conn->prepare("DELETE FROM cart_items WHERE user_id = ?");
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-
-// 6. Redirect
 header("Location: order_confirmation.php");
 exit;
