@@ -29,15 +29,19 @@
         <div class="footer-col">
             <h3>Follow Us</h3>
             <div class="footer-socials">
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/stelenewyork/" target="_blank">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+                
+                <a href="https://www.facebook.com/stele.shop/" target="_blank">
+                    <i class="fa-brands fa-facebook-f"></i>
+                </a>
             </div>
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        <!-- Using PHP to keep the year current -->
         <p><span id="big-c">&copy;</span> <?php echo date("Y"); ?> Scent Atelier. All Rights Reserved.</p>
     </div>
 </footer>
